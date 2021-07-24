@@ -32,6 +32,7 @@ class _HomePageState extends State<HomePage> {
   List<String?> alignmentToFilter = <String?>[];
 
   bool sortAz = true;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -56,7 +57,7 @@ class _HomePageState extends State<HomePage> {
   // Build Widgets
 
   Widget buildList(BuildContext context, List<SuperHero> snapshot) {
-    if (snapshot.isEmpty) {
+    if (isLoading) {
       return Center(child: CircularProgressIndicator());
     }
 
@@ -359,11 +360,18 @@ class _HomePageState extends State<HomePage> {
     return containsGender && containsAlignment && containsText;
   }
 
+  void updateLoding(value) {
+    isLoading = value;
+    setState(() {});
+  }
+
 //Requests
 
   Future<List<SuperHero>> fetchSuperHeroList() async {
     final response = await http
         .get(Uri.parse('https://akabab.github.io/superhero-api/api/all.json'));
+
+    updateLoding(false);
 
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
