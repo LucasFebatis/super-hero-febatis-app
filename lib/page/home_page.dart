@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
         ),
         SliverList(
           delegate: SliverChildBuilderDelegate(
-            (context, index) => buildItemList(snapshot[index]),
+                (context, index) => buildItemList(snapshot[index]),
             childCount: snapshot.length,
           ),
         ),
@@ -83,40 +83,40 @@ class _HomePageState extends State<HomePage> {
     return !isSearching
         ? Text(widget.title)
         : TextField(
-            onChanged: (value) {
-              filterSuperHeroList(value);
-            },
-            style: TextStyle(color: Colors.white),
-            decoration: InputDecoration(
-                icon: Icon(
-                  Icons.search,
-                  color: Colors.white,
-                ),
-                hintText: "Search for name",
-                hintStyle: TextStyle(color: Colors.white)),
-          );
+      onChanged: (value) {
+        filterSuperHeroList(value);
+      },
+      style: TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+          icon: Icon(
+            Icons.search,
+            color: Colors.white,
+          ),
+          hintText: "Search for name",
+          hintStyle: TextStyle(color: Colors.white)),
+    );
   }
 
   List<Widget> buildAppBarActions() {
     return <Widget>[
       isSearching
           ? IconButton(
-              icon: Icon(Icons.cancel),
-              onPressed: () {
-                setState(() {
-                  isSearching = false;
-                  futureSuperHeroFilteredDataBase = futureSuperHeroDataBase;
-                });
-              },
-            )
+        icon: Icon(Icons.cancel),
+        onPressed: () {
+          setState(() {
+            isSearching = false;
+            futureSuperHeroFilteredDataBase = futureSuperHeroDataBase;
+          });
+        },
+      )
           : IconButton(
-              icon: Icon(Icons.search),
-              onPressed: () {
-                setState(() {
-                  isSearching = true;
-                });
-              },
-            )
+        icon: Icon(Icons.search),
+        onPressed: () {
+          setState(() {
+            isSearching = true;
+          });
+        },
+      )
     ];
   }
 
@@ -128,9 +128,23 @@ class _HomePageState extends State<HomePage> {
       child: Card(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-          child: Text(
-            snapshot.name ?? "Sem nome",
-            style: TextStyle(fontSize: 18),
+          child: Column(
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  snapshot.name ?? "Sem nome",
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  getFullname(snapshot),
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -146,7 +160,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+                const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
                 child: ActionChip(
                   backgroundColor: Colors.transparent,
                   shape: StadiumBorder(
@@ -163,7 +177,7 @@ class _HomePageState extends State<HomePage> {
               ),
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+                const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
                 child: ActionChip(
                   backgroundColor: Colors.transparent,
                   shape: StadiumBorder(
@@ -180,7 +194,7 @@ class _HomePageState extends State<HomePage> {
               ),
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+                const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
                 child: ActionChip(
                   backgroundColor: Colors.transparent,
                   shape: StadiumBorder(
@@ -220,7 +234,7 @@ class _HomePageState extends State<HomePage> {
           body: ListTile(
             title: Text("Chips de filtragem"),
             subtitle:
-                const Text('To delete this panel, tap the trash can icon'),
+            const Text('To delete this panel, tap the trash can icon'),
             trailing: const Icon(Icons.delete),
           ),
           // isExpanded: advFilterIsExpanded,
@@ -265,7 +279,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       futureSuperHeroFilteredDataBase = futureSuperHeroDataBase
           .where((item) =>
-              item.name?.toLowerCase().contains(value.toLowerCase()) ?? false)
+      item.name?.toLowerCase().contains(value.toLowerCase()) ?? false)
           .toList();
     });
   }
@@ -274,21 +288,28 @@ class _HomePageState extends State<HomePage> {
       List<String?> optionsSet, Map<String?, bool> optionsMap) {
     showModalBottomSheet(
         context: context,
-        builder: (context) => FilterBottomSheet(
-            title: title,
-            optionsSet: optionsSet,
-            optionsMap: optionsMap,
-            onChange: (item, value) {
-              optionsMap[item] = value;
-            }));
+        builder: (context) =>
+            FilterBottomSheet(
+                title: title,
+                optionsSet: optionsSet,
+                optionsMap: optionsMap,
+                onChange: (item, value) {
+                  optionsMap[item] = value;
+                }));
   }
 
   void showSortOptions(BuildContext context) {
     showModalBottomSheet(
         context: context,
-        builder: (context) => SortBottomSheet(onChange: (item) {
+        builder: (context) =>
+            SortBottomSheet(onChange: (item) {
               print("$item");
             }));
+  }
+
+  String getFullname(SuperHero snapshot) {
+    var isEmpty = snapshot.biography?.fullName?.isEmpty ?? true;
+    return isEmpty ? "Desconhecido" : snapshot.biography!.fullName!;
   }
 
 //Requests
