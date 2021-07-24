@@ -3,24 +3,20 @@ import 'package:flutter/material.dart';
 class SortBottomSheet extends StatefulWidget {
   const SortBottomSheet(
       {Key? key,
-      required this.onChange,
-      required this.genderMap,
-      required this.genderSet,
-      required this.alignmentMap,
-      required this.alignmentSet})
+      required this.onChange})
       : super(key: key);
 
-  final Function(String?, bool) onChange;
-  final Map<String?, bool> genderMap;
-  final List<String?> genderSet;
-  final Map<String?, bool> alignmentMap;
-  final List<String?> alignmentSet;
+  final Function(String) onChange;
 
   @override
   _SortBottomSheetState createState() => _SortBottomSheetState();
 }
 
 class _SortBottomSheetState extends State<SortBottomSheet> {
+
+  bool isAzSelected = true;
+  bool isZaSelected = false;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -30,66 +26,56 @@ class _SortBottomSheetState extends State<SortBottomSheet> {
         child: Column(
           children: [
             Text(
-              "Gender",
+              "Sort",
               style: TextStyle(fontSize: 24),
             ),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  for (int i = 0; i < widget.genderMap.length; i++)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 2.0, horizontal: 8.0),
-                      child: FilterChip(
-                        onSelected: (value) {
-                          widget.onChange(widget.genderSet[i], value);
-                          setState(() {
-                            widget.genderMap[widget.genderSet[i]] = value;
-                          });
-                        },
-                        selected:
-                            widget.genderMap[widget.genderSet[i]] ?? false,
-                        label: Text(
-                          widget.genderSet[i] ?? "Não especificado",
-                        ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 2.0, horizontal: 8.0),
+                    child: ChoiceChip(
+                      onSelected: (value) => setSelected("A-Z"),
+                      selected: isAzSelected,
+                      label: Text(
+                        "A-Z",
                       ),
                     ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 2.0, horizontal: 8.0),
+                    child: ChoiceChip(
+                      onSelected: (value) => setSelected("Z-A"),
+                      selected: isZaSelected,
+                      label: Text(
+                        "Z-A",
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
-            Text(
-              "Alignment",
-              style: TextStyle(fontSize: 24),
-            ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  for (int i = 0; i < widget.alignmentMap.length; i++)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 2.0, horizontal: 8.0),
-                      child: FilterChip(
-                        onSelected: (value) {
-                          widget.onChange(widget.alignmentSet[i], value);
-                          setState(() {
-                            widget.alignmentMap[widget.alignmentSet[i]] = value;
-                          });
-                        },
-                        selected: widget.alignmentMap[widget.alignmentSet[i]] ??
-                            false,
-                        label: Text(
-                          widget.alignmentSet[i] ?? "Não especificado",
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            )
           ],
         ),
       ),
     );
+  }
+
+  void setSelected(value) {
+    switch(value) {
+      case "A-Z":
+        isAzSelected = true;
+        isZaSelected = false;
+        break;
+      case "Z-A":
+        isAzSelected = false;
+        isZaSelected = true;
+        break;
+    }
+
+    setState(() {});
   }
 }

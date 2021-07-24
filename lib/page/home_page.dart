@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:app/page/super_hero_page.dart';
 import 'package:app/model/super_hero.dart';
+import 'package:app/widget/filter_bottom_sheet.dart';
 import 'package:app/widget/sort_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -156,7 +157,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   label: Text('Ordenar'),
                   onPressed: () {
-                    showFilterOptions(context);
+                    showSortOptions(context);
                   },
                 ),
               ),
@@ -173,7 +174,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   label: Text('Gênero'),
                   onPressed: () {
-                    showFilterOptions(context);
+                    showFilterOptions(context, 'Gênero', genderSet, genderMap);
                   },
                 ),
               ),
@@ -190,7 +191,8 @@ class _HomePageState extends State<HomePage> {
                   ),
                   label: Text('Orientação'),
                   onPressed: () {
-                    showFilterOptions(context);
+                    showFilterOptions(
+                        context, 'Orientação', alignmentSet, alignmentMap);
                   },
                 ),
               ),
@@ -268,16 +270,24 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void showFilterOptions(BuildContext context) {
+  void showFilterOptions(BuildContext context, String title,
+      List<String?> optionsSet, Map<String?, bool> optionsMap) {
     showModalBottomSheet(
         context: context,
-        builder: (context) => SortBottomSheet(
-            genderMap: genderMap,
-            genderSet: genderSet,
-            alignmentMap: alignmentMap,
-            alignmentSet: alignmentSet,
+        builder: (context) => FilterBottomSheet(
+            title: title,
+            optionsSet: optionsSet,
+            optionsMap: optionsMap,
             onChange: (item, value) {
-              print("$item - $value");
+              optionsMap[item] = value;
+            }));
+  }
+
+  void showSortOptions(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) => SortBottomSheet(onChange: (item) {
+              print("$item");
             }));
   }
 
