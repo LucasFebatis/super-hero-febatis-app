@@ -1,4 +1,4 @@
-import 'package:app/super_hero.dart';
+import 'package:app/model/super_hero.dart';
 import 'package:flutter/material.dart';
 
 class SuperHeroPage extends StatelessWidget {

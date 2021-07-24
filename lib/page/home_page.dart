@@ -3,22 +3,22 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:app/page/super_hero_page.dart';
-import 'package:app/super_hero.dart';
+import 'package:app/model/super_hero.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+class HomePage extends StatefulWidget {
+  HomePage({Key key, this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HomePageState extends State<HomePage> {
   List<SuperHero> futureSuperHeroDataBase;
   List<SuperHero> futureSuperHeroFilteredDataBase;
   List<String> genderSet;
