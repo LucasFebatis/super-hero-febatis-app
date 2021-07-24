@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:app/page/super_hero_page.dart';
 import 'package:app/model/super_hero.dart';
+import 'package:app/widget/sort_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -268,74 +269,16 @@ class _HomePageState extends State<HomePage> {
   }
 
   void showFilterOptions(BuildContext context) {
-    //TODO: Transformar em um StatefulWidget
     showModalBottomSheet(
         context: context,
-        builder: (context) => Container(
-              height: 250,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Text(
-                      "Gender",
-                      style: TextStyle(fontSize: 24),
-                    ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          for (int i = 0; i < genderMap.length; i++)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 2.0, horizontal: 8.0),
-                              child: FilterChip(
-                                onSelected: (value) {
-                                  setState(() {
-                                    genderMap[genderSet[i]] = value;
-                                  });
-                                },
-                                selected: genderMap[genderSet[i]] ?? false,
-                                label: Text(
-                                  genderSet[i] ?? "Não especificado",
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    Text(
-                      "Alignment",
-                      style: TextStyle(fontSize: 24),
-                    ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          for (int i = 0; i < alignmentMap.length; i++)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 2.0, horizontal: 8.0),
-                              child: FilterChip(
-                                onSelected: (value) {
-                                  setState(() {
-                                    alignmentMap[alignmentSet[i]] = value;
-                                  });
-                                },
-                                selected:
-                                    alignmentMap[alignmentSet[i]] ?? false,
-                                label: Text(
-                                  alignmentSet[i] ?? "Não especificado",
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ));
+        builder: (context) => SortBottomSheet(
+            genderMap: genderMap,
+            genderSet: genderSet,
+            alignmentMap: alignmentMap,
+            alignmentSet: alignmentSet,
+            onChange: (item, value) {
+              print("$item - $value");
+            }));
   }
 
 //Requests
