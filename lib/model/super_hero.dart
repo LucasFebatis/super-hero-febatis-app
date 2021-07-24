@@ -1,13 +1,13 @@
 class SuperHero {
-  int id;
-  String name;
-  String slug;
-  Powerstats powerstats;
-  Appearance appearance;
-  Biography biography;
-  Work work;
-  Connections connections;
-  Images images;
+  int? id;
+  String? name;
+  String? slug;
+  Powerstats? powerstats;
+  Appearance? appearance;
+  Biography? biography;
+  Work? work;
+  Connections? connections;
+  Images? images;
 
   SuperHero(
       {this.id,
@@ -47,34 +47,34 @@ class SuperHero {
     data['name'] = this.name;
     data['slug'] = this.slug;
     if (this.powerstats != null) {
-      data['powerstats'] = this.powerstats.toJson();
+      data['powerstats'] = this.powerstats?.toJson();
     }
     if (this.appearance != null) {
-      data['appearance'] = this.appearance.toJson();
+      data['appearance'] = this.appearance?.toJson();
     }
     if (this.biography != null) {
-      data['biography'] = this.biography.toJson();
+      data['biography'] = this.biography?.toJson();
     }
     if (this.work != null) {
-      data['work'] = this.work.toJson();
+      data['work'] = this.work?.toJson();
     }
     if (this.connections != null) {
-      data['connections'] = this.connections.toJson();
+      data['connections'] = this.connections?.toJson();
     }
     if (this.images != null) {
-      data['images'] = this.images.toJson();
+      data['images'] = this.images?.toJson();
     }
     return data;
   }
 }
 
 class Powerstats {
-  int intelligence;
-  int strength;
-  int speed;
-  int durability;
-  int power;
-  int combat;
+  int? intelligence;
+  int? strength;
+  int? speed;
+  int? durability;
+  int? power;
+  int? combat;
 
   Powerstats(
       {this.intelligence,
@@ -106,12 +106,12 @@ class Powerstats {
 }
 
 class Appearance {
-  String gender;
-  String race;
-  List<String> height;
-  List<String> weight;
-  String eyeColor;
-  String hairColor;
+  String? gender;
+  String? race;
+  List<String>? height;
+  List<String>? weight;
+  String? eyeColor;
+  String? hairColor;
 
   Appearance(
       {this.gender,
@@ -143,13 +143,13 @@ class Appearance {
 }
 
 class Biography {
-  String fullName;
-  String alterEgos;
-  List<String> aliases;
-  String placeOfBirth;
-  String firstAppearance;
-  String publisher;
-  String alignment;
+  String? fullName;
+  String? alterEgos;
+  List<String>? aliases;
+  String? placeOfBirth;
+  String? firstAppearance;
+  String? publisher;
+  String? alignment;
 
   Biography(
       {this.fullName,
@@ -184,8 +184,8 @@ class Biography {
 }
 
 class Work {
-  String occupation;
-  String base;
+  String? occupation;
+  String? base;
 
   Work({this.occupation, this.base});
 
@@ -203,8 +203,8 @@ class Work {
 }
 
 class Connections {
-  String groupAffiliation;
-  String relatives;
+  String? groupAffiliation;
+  String? relatives;
 
   Connections({this.groupAffiliation, this.relatives});
 
@@ -222,10 +222,10 @@ class Connections {
 }
 
 class Images {
-  String xs;
-  String sm;
-  String md;
-  String lg;
+  String? xs;
+  String? sm;
+  String? md;
+  String? lg;
 
   Images({this.xs, this.sm, this.md, this.lg});
 

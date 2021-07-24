@@ -4,13 +4,11 @@ import 'dart:math';
 
 import 'package:app/page/super_hero_page.dart';
 import 'package:app/model/super_hero.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key, this.title}) : super(key: key);
+  HomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -19,12 +17,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<SuperHero> futureSuperHeroDataBase;
-  List<SuperHero> futureSuperHeroFilteredDataBase;
-  List<String> genderSet;
-  List<String> alignmentSet;
-  Map<String, bool> genderMap = new Map();
-  Map<String, bool> alignmentMap = new Map();
+  List<SuperHero> futureSuperHeroDataBase = List.empty();
+  List<SuperHero> futureSuperHeroFilteredDataBase = List.empty();
+  List<String?> genderSet = List.empty();
+  List<String?> alignmentSet = List.empty();
+  Map<String?, bool> genderMap = Map();
+  Map<String?, bool> alignmentMap = Map();
   bool isSearching = false;
 
   @override
@@ -50,7 +48,7 @@ class _HomePageState extends State<HomePage> {
   // Build Widgets
 
   Widget buildList(BuildContext context, List<SuperHero> snapshot) {
-    if (snapshot == null) {
+    if (snapshot.isEmpty) {
       return Center(child: CircularProgressIndicator());
     }
 
@@ -129,7 +127,7 @@ class _HomePageState extends State<HomePage> {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
           child: Text(
-            snapshot.name,
+            snapshot.name ?? "Sem nome",
             style: TextStyle(fontSize: 18),
           ),
         ),
@@ -246,27 +244,25 @@ class _HomePageState extends State<HomePage> {
       futureSuperHeroFilteredDataBase = value;
 
       genderSet = futureSuperHeroFilteredDataBase
-          .map((e) => e.appearance.gender)
+          .map((e) => e.appearance?.gender)
           .toSet()
           .toList();
 
       alignmentSet = futureSuperHeroFilteredDataBase
-          .map((e) => e.biography.alignment)
+          .map((e) => e.biography?.alignment)
           .toSet()
           .toList();
 
-      genderSet
-          .forEach((element) => genderMap[element] = false);
-      alignmentSet
-          .forEach((element) => alignmentMap[element] = false);
+      genderSet.forEach((element) => genderMap[element] = false);
+      alignmentSet.forEach((element) => alignmentMap[element] = false);
     });
   }
 
   void filterSuperHeroList(String value) {
     setState(() {
       futureSuperHeroFilteredDataBase = futureSuperHeroDataBase
-          .where(
-              (item) => item.name.toLowerCase().contains(value.toLowerCase()))
+          .where((item) =>
+              item.name?.toLowerCase().contains(value.toLowerCase()) ?? false)
           .toList();
     });
   }
@@ -299,9 +295,9 @@ class _HomePageState extends State<HomePage> {
                                     genderMap[genderSet[i]] = value;
                                   });
                                 },
-                                selected: genderMap[genderSet[i]],
+                                selected: genderMap[genderSet[i]] ?? false,
                                 label: Text(
-                                  genderSet[i],
+                                  genderSet[i] ?? "Não especificado",
                                 ),
                               ),
                             ),
@@ -326,9 +322,10 @@ class _HomePageState extends State<HomePage> {
                                     alignmentMap[alignmentSet[i]] = value;
                                   });
                                 },
-                                selected: alignmentMap[alignmentSet[i]],
+                                selected:
+                                    alignmentMap[alignmentSet[i]] ?? false,
                                 label: Text(
-                                  alignmentSet[i],
+                                  alignmentSet[i] ?? "Não especificado",
                                 ),
                               ),
                             ),

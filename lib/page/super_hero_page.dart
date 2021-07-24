@@ -6,12 +6,12 @@ class SuperHeroPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final SuperHero superHero = ModalRoute.of(context).settings.arguments;
+    final SuperHero superHero = ModalRoute.of(context)!.settings.arguments as SuperHero;
     return CustomScrollView(
       slivers: <Widget>[
         // Add the app bar to the CustomScrollView.
         SliverAppBar(
-          title: Text(superHero.name),
+          title: Text(superHero.name ?? "Sem nome"),
           floating: true,
         ),
       ],
