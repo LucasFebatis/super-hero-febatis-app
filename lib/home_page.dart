@@ -4,6 +4,8 @@ import 'dart:math';
 
 import 'package:app/page/super_hero_page.dart';
 import 'package:app/super_hero.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -19,6 +21,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<SuperHero> futureSuperHeroDataBase;
   List<SuperHero> futureSuperHeroFilteredDataBase;
+  List<String> genderSet;
+  List<String> alignmentSet;
+  Map<String, bool> genderMap = new Map();
+  Map<String, bool> alignmentMap = new Map();
   bool isSearching = false;
 
   @override
@@ -30,7 +36,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: buildList(futureSuperHeroFilteredDataBase),
+      body: Builder(
+          builder: (context) =>
+              buildList(context, futureSuperHeroFilteredDataBase)),
       floatingActionButton: FloatingActionButton(
         onPressed: randomSuperHero,
         tooltip: 'Random Super hero',
@@ -41,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Build Widgets
 
-  Widget buildList(List<SuperHero> snapshot) {
+  Widget buildList(BuildContext context, List<SuperHero> snapshot) {
     if (snapshot == null) {
       return Center(child: CircularProgressIndicator());
     }
@@ -52,7 +60,10 @@ class _MyHomePageState extends State<MyHomePage> {
         SliverAppBar(
           title: buildAppBarTitle(),
           actions: buildAppBarActions(),
-          floating: true,
+          floating: false,
+        ),
+        SliverToBoxAdapter(
+          child: buildFilterBar(context),
         ),
         SliverList(
           delegate: SliverChildBuilderDelegate(
@@ -126,6 +137,71 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Widget buildFilterBar(BuildContext context) {
+    return Wrap(
+      children: [
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+                child: ActionChip(
+                  backgroundColor: Colors.transparent,
+                  shape: StadiumBorder(
+                      side: BorderSide(color: Colors.grey, width: 0.5)),
+                  avatar: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: Colors.grey,
+                  ),
+                  label: Text('Ordenar'),
+                  onPressed: () {
+                    showFilterOptions(context);
+                  },
+                ),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+                child: ActionChip(
+                  backgroundColor: Colors.transparent,
+                  shape: StadiumBorder(
+                      side: BorderSide(color: Colors.grey, width: 0.5)),
+                  avatar: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: Colors.grey,
+                  ),
+                  label: Text('Gênero'),
+                  onPressed: () {
+                    showFilterOptions(context);
+                  },
+                ),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+                child: ActionChip(
+                  backgroundColor: Colors.transparent,
+                  shape: StadiumBorder(
+                      side: BorderSide(color: Colors.grey, width: 0.5)),
+                  avatar: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: Colors.grey,
+                  ),
+                  label: Text('Orientação'),
+                  onPressed: () {
+                    showFilterOptions(context);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildPanel() {
     return ExpansionPanelList(
       expansionCallback: (int index, bool isExpanded) {
@@ -168,6 +244,21 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       futureSuperHeroDataBase = value;
       futureSuperHeroFilteredDataBase = value;
+
+      genderSet = futureSuperHeroFilteredDataBase
+          .map((e) => e.appearance.gender)
+          .toSet()
+          .toList();
+
+      alignmentSet = futureSuperHeroFilteredDataBase
+          .map((e) => e.biography.alignment)
+          .toSet()
+          .toList();
+
+      genderSet
+          .forEach((element) => genderMap[element] = false);
+      alignmentSet
+          .forEach((element) => alignmentMap[element] = false);
     });
   }
 
@@ -178,6 +269,76 @@ class _MyHomePageState extends State<MyHomePage> {
               (item) => item.name.toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
+  }
+
+  void showFilterOptions(BuildContext context) {
+    //TODO: Transformar em um StatefulWidget
+    showModalBottomSheet(
+        context: context,
+        builder: (context) => Container(
+              height: 250,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    Text(
+                      "Gender",
+                      style: TextStyle(fontSize: 24),
+                    ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          for (int i = 0; i < genderMap.length; i++)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 2.0, horizontal: 8.0),
+                              child: FilterChip(
+                                onSelected: (value) {
+                                  setState(() {
+                                    genderMap[genderSet[i]] = value;
+                                  });
+                                },
+                                selected: genderMap[genderSet[i]],
+                                label: Text(
+                                  genderSet[i],
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    Text(
+                      "Alignment",
+                      style: TextStyle(fontSize: 24),
+                    ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          for (int i = 0; i < alignmentMap.length; i++)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 2.0, horizontal: 8.0),
+                              child: FilterChip(
+                                onSelected: (value) {
+                                  setState(() {
+                                    alignmentMap[alignmentSet[i]] = value;
+                                  });
+                                },
+                                selected: alignmentMap[alignmentSet[i]],
+                                label: Text(
+                                  alignmentSet[i],
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ));
   }
 
 //Requests
