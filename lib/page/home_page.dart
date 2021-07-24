@@ -21,11 +21,17 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<SuperHero> futureSuperHeroDataBase = List.empty();
   List<SuperHero> futureSuperHeroFilteredDataBase = List.empty();
-  List<String?> genderSet = List.empty();
-  List<String?> alignmentSet = List.empty();
+  List<String?> genderSet = <String?>[];
+  List<String?> alignmentSet = <String?>[];
   Map<String?, bool> genderMap = Map();
   Map<String?, bool> alignmentMap = Map();
   bool isSearching = false;
+
+  String nameToFilter = "";
+  List<String?> genderToFilter = <String?>[];
+  List<String?> alignmentToFilter = <String?>[];
+
+  bool sortAz = true;
 
   @override
   void initState() {
@@ -67,7 +73,7 @@ class _HomePageState extends State<HomePage> {
         ),
         SliverList(
           delegate: SliverChildBuilderDelegate(
-                (context, index) => buildItemList(snapshot[index]),
+            (context, index) => buildItemList(snapshot[index]),
             childCount: snapshot.length,
           ),
         ),
@@ -83,40 +89,41 @@ class _HomePageState extends State<HomePage> {
     return !isSearching
         ? Text(widget.title)
         : TextField(
-      onChanged: (value) {
-        filterSuperHeroList(value);
-      },
-      style: TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-          icon: Icon(
-            Icons.search,
-            color: Colors.white,
-          ),
-          hintText: "Search for name",
-          hintStyle: TextStyle(color: Colors.white)),
-    );
+            onChanged: (value) {
+              nameToFilter = value;
+              applyFilter();
+            },
+            style: TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+                icon: Icon(
+                  Icons.search,
+                  color: Colors.white,
+                ),
+                hintText: "Search for name",
+                hintStyle: TextStyle(color: Colors.white)),
+          );
   }
 
   List<Widget> buildAppBarActions() {
     return <Widget>[
       isSearching
           ? IconButton(
-        icon: Icon(Icons.cancel),
-        onPressed: () {
-          setState(() {
-            isSearching = false;
-            futureSuperHeroFilteredDataBase = futureSuperHeroDataBase;
-          });
-        },
-      )
+              icon: Icon(Icons.cancel),
+              onPressed: () {
+                setState(() {
+                  isSearching = false;
+                  futureSuperHeroFilteredDataBase = futureSuperHeroDataBase;
+                });
+              },
+            )
           : IconButton(
-        icon: Icon(Icons.search),
-        onPressed: () {
-          setState(() {
-            isSearching = true;
-          });
-        },
-      )
+              icon: Icon(Icons.search),
+              onPressed: () {
+                setState(() {
+                  isSearching = true;
+                });
+              },
+            )
     ];
   }
 
@@ -160,7 +167,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               Padding(
                 padding:
-                const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+                    const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
                 child: ActionChip(
                   backgroundColor: Colors.transparent,
                   shape: StadiumBorder(
@@ -177,7 +184,7 @@ class _HomePageState extends State<HomePage> {
               ),
               Padding(
                 padding:
-                const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+                    const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
                 child: ActionChip(
                   backgroundColor: Colors.transparent,
                   shape: StadiumBorder(
@@ -188,13 +195,14 @@ class _HomePageState extends State<HomePage> {
                   ),
                   label: Text('Gênero'),
                   onPressed: () {
-                    showFilterOptions(context, 'Gênero', genderSet, genderMap);
+                    showFilterOptions(context, 'Gênero', genderSet, genderMap,
+                        genderToFilter);
                   },
                 ),
               ),
               Padding(
                 padding:
-                const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+                    const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
                 child: ActionChip(
                   backgroundColor: Colors.transparent,
                   shape: StadiumBorder(
@@ -205,8 +213,8 @@ class _HomePageState extends State<HomePage> {
                   ),
                   label: Text('Orientação'),
                   onPressed: () {
-                    showFilterOptions(
-                        context, 'Orientação', alignmentSet, alignmentMap);
+                    showFilterOptions(context, 'Orientação', alignmentSet,
+                        alignmentMap, alignmentToFilter);
                   },
                 ),
               ),
@@ -234,7 +242,7 @@ class _HomePageState extends State<HomePage> {
           body: ListTile(
             title: Text("Chips de filtragem"),
             subtitle:
-            const Text('To delete this panel, tap the trash can icon'),
+                const Text('To delete this panel, tap the trash can icon'),
             trailing: const Icon(Icons.delete),
           ),
           // isExpanded: advFilterIsExpanded,
@@ -275,41 +283,80 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void filterSuperHeroList(String value) {
+  void applyFilter() {
     setState(() {
       futureSuperHeroFilteredDataBase = futureSuperHeroDataBase
-          .where((item) =>
-      item.name?.toLowerCase().contains(value.toLowerCase()) ?? false)
+          .where((item) => filterFunction(item))
           .toList();
+
+      if (sortAz) {
+        futureSuperHeroFilteredDataBase
+            .sort((a, b) => a.name?.compareTo(b.name ?? "") ?? 0);
+      } else {
+        futureSuperHeroFilteredDataBase
+            .sort((a, b) => b.name?.compareTo(a.name ?? "") ?? 0);
+      }
     });
   }
 
-  void showFilterOptions(BuildContext context, String title,
-      List<String?> optionsSet, Map<String?, bool> optionsMap) {
+  void showFilterOptions(
+      BuildContext context,
+      String title,
+      List<String?> optionsSet,
+      Map<String?, bool> optionsMap,
+      List<String?> filterList) {
     showModalBottomSheet(
         context: context,
-        builder: (context) =>
-            FilterBottomSheet(
-                title: title,
-                optionsSet: optionsSet,
-                optionsMap: optionsMap,
-                onChange: (item, value) {
-                  optionsMap[item] = value;
-                }));
+        builder: (context) => FilterBottomSheet(
+            title: title,
+            optionsSet: optionsSet,
+            optionsMap: optionsMap,
+            onChange: (item, value) {
+              optionsMap[item] = value;
+              if (value) {
+                filterList.add(item);
+              } else {
+                filterList.remove(item);
+              }
+              applyFilter();
+            }));
   }
 
   void showSortOptions(BuildContext context) {
     showModalBottomSheet(
         context: context,
-        builder: (context) =>
-            SortBottomSheet(onChange: (item) {
-              print("$item");
+        builder: (context) => SortBottomSheet(
+            initalSortAz: sortAz,
+            onChange: (item) {
+              sortAz = item == "A-Z";
+              applyFilter();
             }));
   }
 
   String getFullname(SuperHero snapshot) {
     var isEmpty = snapshot.biography?.fullName?.isEmpty ?? true;
     return isEmpty ? "Desconhecido" : snapshot.biography!.fullName!;
+  }
+
+  bool filterFunction(SuperHero item) {
+    final bool isToApplyGender = genderToFilter.isNotEmpty;
+    final bool isToApplyAlignment = alignmentToFilter.isNotEmpty;
+
+    bool containsGender = true;
+    bool containsAlignment = true;
+
+    bool containsText =
+        item.name?.toLowerCase().contains(nameToFilter.toLowerCase()) ?? false;
+
+    if (isToApplyGender) {
+      containsGender = genderToFilter.contains(item.appearance?.gender);
+    }
+
+    if (isToApplyAlignment) {
+      containsAlignment = alignmentToFilter.contains(item.biography?.alignment);
+    }
+
+    return containsGender && containsAlignment && containsText;
   }
 
 //Requests

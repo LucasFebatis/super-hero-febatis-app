@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 
 class SortBottomSheet extends StatefulWidget {
-  const SortBottomSheet(
-      {Key? key,
-      required this.onChange})
-      : super(key: key);
+  const SortBottomSheet({Key? key, required this.initalSortAz, required this.onChange}) : super(key: key);
 
+  final bool initalSortAz;
   final Function(String) onChange;
 
   @override
@@ -13,9 +11,13 @@ class SortBottomSheet extends StatefulWidget {
 }
 
 class _SortBottomSheetState extends State<SortBottomSheet> {
+  bool sortAz = true;
 
-  bool isAzSelected = true;
-  bool isZaSelected = false;
+  @override
+  void initState() {
+    super.initState();
+    sortAz = widget.initalSortAz;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +40,7 @@ class _SortBottomSheetState extends State<SortBottomSheet> {
                         vertical: 2.0, horizontal: 8.0),
                     child: ChoiceChip(
                       onSelected: (value) => setSelected("A-Z"),
-                      selected: isAzSelected,
+                      selected: sortAz,
                       label: Text(
                         "A-Z",
                       ),
@@ -49,7 +51,7 @@ class _SortBottomSheetState extends State<SortBottomSheet> {
                         vertical: 2.0, horizontal: 8.0),
                     child: ChoiceChip(
                       onSelected: (value) => setSelected("Z-A"),
-                      selected: isZaSelected,
+                      selected: !sortAz,
                       label: Text(
                         "Z-A",
                       ),
@@ -65,14 +67,13 @@ class _SortBottomSheetState extends State<SortBottomSheet> {
   }
 
   void setSelected(value) {
-    switch(value) {
+    widget.onChange(value);
+    switch (value) {
       case "A-Z":
-        isAzSelected = true;
-        isZaSelected = false;
+        sortAz = true;
         break;
       case "Z-A":
-        isAzSelected = false;
-        isZaSelected = true;
+        sortAz = false;
         break;
     }
 
