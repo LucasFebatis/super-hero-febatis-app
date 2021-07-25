@@ -1,4 +1,5 @@
 import 'package:app/model/super_hero.dart';
+import 'package:app/widget/card/main_information_card.dart';
 import 'package:flutter/material.dart';
 
 class SuperHeroPage extends StatelessWidget {
@@ -20,6 +21,7 @@ class SuperHeroPage extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.max,
               children: [
+                buildMainCard(context, superHero),
                 buildPowerstatsCard(context, superHero),
                 buildAppearanceCard(context, superHero),
                 buildBiographyCard(context, superHero),
@@ -56,6 +58,13 @@ class SuperHeroPage extends StatelessWidget {
   }
 
   // Build Cards
+
+  buildMainCard(BuildContext context, SuperHero superHero) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: MainInformationCard(superHero: superHero,),
+    );
+  }
 
   buildPowerstatsCard(BuildContext context, SuperHero superHero) {
     return Padding(
@@ -169,7 +178,8 @@ class SuperHeroPage extends StatelessWidget {
               children: [
                 buildTitle(context, "Connections"),
                 buildInfo("Relatives", superHero.connections?.relatives),
-                buildInfo("Group Affiliation", superHero.connections?.groupAffiliation),
+                buildInfo("Group Affiliation",
+                    superHero.connections?.groupAffiliation),
               ],
             ),
           ),

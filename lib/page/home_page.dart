@@ -1,13 +1,13 @@
-import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
 
+import 'package:app/controller/home_controller.dart';
+import 'package:app/dialogs/error_dialog.dart';
 import 'package:app/page/super_hero_page.dart';
 import 'package:app/model/super_hero.dart';
-import 'package:app/widget/filter_bottom_sheet.dart';
-import 'package:app/widget/sort_bottom_sheet.dart';
+import 'package:app/widget/bottomsheet/filter_bottom_sheet.dart';
+import 'package:app/widget/card/main_information_card.dart';
+import 'package:app/widget/bottomsheet/sort_bottom_sheet.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key, required this.title}) : super(key: key);
@@ -19,6 +19,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  HomeController homeController = HomeController();
+
   List<SuperHero> futureSuperHeroDataBase = List.empty();
   List<SuperHero> futureSuperHeroFilteredDataBase = List.empty();
   List<String?> genderSet = <String?>[];
@@ -37,7 +39,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    fetchSuperHeroList().then((value) => successCallback(value));
+    fetchSuperHero();
+
   }
 
   @override
@@ -67,7 +70,7 @@ class _HomePageState extends State<HomePage> {
         SliverAppBar(
           title: buildAppBarTitle(),
           actions: buildAppBarActions(),
-          floating: false,
+          floating: true,
         ),
         SliverToBoxAdapter(
           child: buildFilterBar(context),
@@ -113,6 +116,7 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 setState(() {
                   isSearching = false;
+                  nameToFilter = "";
                   futureSuperHeroFilteredDataBase = futureSuperHeroDataBase;
                 });
               },
@@ -133,28 +137,8 @@ class _HomePageState extends State<HomePage> {
       onTap: () {
         goToSuperHero(snapshot);
       },
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-          child: Column(
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  snapshot.name ?? "Sem nome",
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  getFullname(snapshot),
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
-                ),
-              ),
-            ],
-          ),
-        ),
+      child: MainInformationCard(
+        superHero: snapshot,
       ),
     );
   }
@@ -264,26 +248,6 @@ class _HomePageState extends State<HomePage> {
     goToSuperHero(futureSuperHeroDataBase[randomHero]);
   }
 
-  void successCallback(List<SuperHero> value) {
-    setState(() {
-      futureSuperHeroDataBase = value;
-      futureSuperHeroFilteredDataBase = value;
-
-      genderSet = futureSuperHeroFilteredDataBase
-          .map((e) => e.appearance?.gender)
-          .toSet()
-          .toList();
-
-      alignmentSet = futureSuperHeroFilteredDataBase
-          .map((e) => e.biography?.alignment)
-          .toSet()
-          .toList();
-
-      genderSet.forEach((element) => genderMap[element] = false);
-      alignmentSet.forEach((element) => alignmentMap[element] = false);
-    });
-  }
-
   void applyFilter() {
     setState(() {
       futureSuperHeroFilteredDataBase = futureSuperHeroDataBase
@@ -334,9 +298,14 @@ class _HomePageState extends State<HomePage> {
             }));
   }
 
-  String getFullname(SuperHero snapshot) {
-    var isEmpty = snapshot.biography?.fullName?.isEmpty ?? true;
-    return isEmpty ? "Desconhecido" : snapshot.biography!.fullName!;
+  Future<void> showErrorDialog(Object error) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return ErrorDialog(error: error, listener: fetchSuperHero);
+      },
+    );
   }
 
   bool filterFunction(SuperHero item) {
@@ -360,29 +329,41 @@ class _HomePageState extends State<HomePage> {
     return containsGender && containsAlignment && containsText;
   }
 
-  void updateLoding(value) {
+  void updateLoading(value) {
     isLoading = value;
     setState(() {});
   }
 
-//Requests
+  void fetchSuperHero() {
+    homeController.getAll().then(successCallback).catchError(errorCallback);
+  }
 
-  Future<List<SuperHero>> fetchSuperHeroList() async {
-    final response = await http
-        .get(Uri.parse('https://akabab.github.io/superhero-api/api/all.json'));
+  // Requests Callback
 
-    updateLoding(false);
+  void successCallback(List<SuperHero> value) {
+    updateLoading(false);
 
-    if (response.statusCode == 200) {
-      // If the server did return a 200 OK response,
-      // then parse the JSON.
-      Iterable l = jsonDecode(response.body);
-      return List<SuperHero>.from(l.map((model) => SuperHero.fromJson(model)));
-      // return SuperHero.fromJson(jsonDecode(response.body));
-    } else {
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
-      throw Exception('Failed to load album');
-    }
+    setState(() {
+      futureSuperHeroDataBase = value;
+      futureSuperHeroFilteredDataBase = value;
+
+      genderSet = futureSuperHeroFilteredDataBase
+          .map((e) => e.appearance?.gender)
+          .toSet()
+          .toList();
+
+      alignmentSet = futureSuperHeroFilteredDataBase
+          .map((e) => e.biography?.alignment)
+          .toSet()
+          .toList();
+
+      genderSet.forEach((element) => genderMap[element] = false);
+      alignmentSet.forEach((element) => alignmentMap[element] = false);
+    });
+  }
+
+  void errorCallback(Object error) {
+    updateLoading(false);
+    showErrorDialog(error);
   }
 }
