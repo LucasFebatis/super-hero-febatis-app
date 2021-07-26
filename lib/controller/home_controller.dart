@@ -4,7 +4,11 @@ import 'package:app/model/super_hero.dart';
 import 'package:dio/dio.dart';
 
 class HomeController {
-  final ISuperHeroRepository superHeroRepository = SuperHeroRepository(Dio());
+  late ISuperHeroRepository superHeroRepository;
+
+  HomeController(Dio dio) {
+    superHeroRepository = SuperHeroRepository(dio);
+  }
 
   Future<List<SuperHero>> getAll() {
     return superHeroRepository.getAll();

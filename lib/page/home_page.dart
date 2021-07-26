@@ -7,6 +7,7 @@ import 'package:app/model/super_hero.dart';
 import 'package:app/widget/bottomsheet/filter_bottom_sheet.dart';
 import 'package:app/widget/card/main_information_card.dart';
 import 'package:app/widget/bottomsheet/sort_bottom_sheet.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,7 +20,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  HomeController homeController = HomeController();
+  HomeController homeController = HomeController(Dio());
 
   List<SuperHero> futureSuperHeroDataBase = List.empty();
   List<SuperHero> futureSuperHeroFilteredDataBase = List.empty();
