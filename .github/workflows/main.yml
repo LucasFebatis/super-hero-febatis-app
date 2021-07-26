@@ -30,6 +30,7 @@ jobs:
       with:
         flutter-version: '2.2.3'
     - run: flutter pub get
+    - run: flutter pub run build_runner build
     - run: flutter test
     - run: flutter build apk
     - run: flutter build appbundle
