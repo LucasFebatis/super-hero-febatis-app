@@ -2,7 +2,7 @@
 
 A new Flutter project.
 
-App de teste para consultar a api [akabab/superhero-api] (https://github.com/akabab/superhero-api)
+App de teste para consultar a api [akabab/superhero-api](https://github.com/akabab/superhero-api)
 
 
 ## Screenshots
