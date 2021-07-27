@@ -4,6 +4,9 @@ A new Flutter project.
 
 App de teste para consultar a api [akabab/superhero-api](https://github.com/akabab/superhero-api)
 
+## Deseja testar?
+
+Baixe uma versão final em [Releases](https://github.com/LucasFebatis/super-hero-febatis-app/releases)
 
 ## Screenshots
 
